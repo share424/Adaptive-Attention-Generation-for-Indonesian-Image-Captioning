@@ -17,7 +17,7 @@ this code is implementation of [Adaptive Attention Generation for Indonesian Ima
 download [here](https://drive.google.com/drive/u/2/folders/11BtRAunJN5tWIcDIzoh5WR3NTQyuJkQL)
 
 ## References
-this code was adopt from [fawazsammani](https://github.com/fawazsammani/knowing-when-to-look-adaptive-attention)
+this code was adopted from [fawazsammani](https://github.com/fawazsammani/knowing-when-to-look-adaptive-attention) implementation
 
 ## Cite
 you can cite my paper at
