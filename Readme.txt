@@ -9,3 +9,7 @@ Files
 - test_resnet.ipynb = testing using resnet
 - train_vgg.ipynb = training using vgg
 - test_vgg.ipynb = test using vgg
+
+
+Download Pretrained model and dataset
+https://drive.google.com/drive/u/2/folders/11BtRAunJN5tWIcDIzoh5WR3NTQyuJkQL
