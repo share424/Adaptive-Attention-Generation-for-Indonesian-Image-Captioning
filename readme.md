@@ -1,5 +1,5 @@
 # Adaptive Attention Generation for Indonesian Image Captioning
-this code is implementation of [Adaptive Attention Generation for Indonesian Image Captioning]([https://drive.google.com/open?id=1gZWBbQP6dmcSh0u36rcyo6Vvf8UduO1T]([https://drive.google.com/file/d/1GZXQFF5RKpElZWKL9yK-2Wynh0edwJC5/view](https://drive.google.com/file/d/1GZXQFF5RKpElZWKL9yK-2Wynh0edwJC5/view))) paper 
+this code is implementation of [Adaptive Attention Generation for Indonesian Image Captioning](https://drive.google.com/file/d/1GZXQFF5RKpElZWKL9yK-2Wynh0edwJC5/view) paper 
 
 ## System Requirements
 1. Anaconda
