@@ -13,8 +13,8 @@ this code is implementation of [Adaptive Attention Generation for Indonesian Ima
 3. train_vgg.ipynb = training using vgg
 4. test_vgg.ipynb = test using vgg
 
-## Download Dataset and Pretrained model
-download [here](https://drive.google.com/drive/u/2/folders/11BtRAunJN5tWIcDIzoh5WR3NTQyuJkQL)
+## Download Pretrained model
+download pretrained resnet [here](https://drive.google.com/file/d/1clGXtjgtZD3yPFdAaS0NVa0GnB5TN2Ah/view?usp=share_link)
 
 ## References
 this code was adopted from [fawazsammani](https://github.com/fawazsammani/knowing-when-to-look-adaptive-attention) implementation
