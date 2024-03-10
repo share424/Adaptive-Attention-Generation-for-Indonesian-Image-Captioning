@@ -1,0 +1,11 @@
+resnet/
+test/
+dataset/
+checkpoints/
+old-code/
+
+*.egg-info
+__pycache__
+*.pyc
+*.ckpt
+*.pth
