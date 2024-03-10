@@ -193,7 +193,7 @@ class AdaptiveAttentionImageCaptioning:
         if return_raw:
             return prediction, alpha, beta
         
-        if return_visualize and keep_special_token:
+        if return_visualize and not keep_special_token:
             raise ValueError("Must keep special tokens to visualize attention weights.")
 
         sentences = self.tokenizer.detokenize(prediction[0], keep_special_token=keep_special_token)
