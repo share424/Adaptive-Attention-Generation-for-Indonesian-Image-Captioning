@@ -20,15 +20,7 @@ this code is implementation of [Adaptive Attention Generation for Indonesian Ima
 - Java 1.8 (Required by the evaluation module, if you want to inference only, you can skip this)
 
 # Installation
-## Google Colab
-1. Clone this repo
-   ```bash
-   !git clone https://github.com/share424/Adaptive-Attention-Generation-for-Indonesian-Image-Captioning.git
-   ```
-2. Install the requirements
-   ```bash
-   !pip install Adaptive-Attention-Generation-for-Indonesian-Image-Captioning
-   ```
+Follow this [example](https://colab.research.google.com/github/share424/Adaptive-Attention-Generation-for-Indonesian-Image-Captioning/blob/master/notebooks/example.ipynb).
 
 ## With GPU CUDA
 1. Makesure you have installed [CUDA and cuDNN](https://medium.com/geekculture/install-cuda-and-cudnn-on-windows-linux-52d1501a8805)
