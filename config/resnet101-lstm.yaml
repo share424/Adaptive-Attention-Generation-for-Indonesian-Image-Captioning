@@ -1,0 +1,90 @@
+architecture:
+  encoder:
+    name: ResNet
+    weights: ""
+    freeze: True
+    config:
+      name: resnet101
+      avg_pool_size: 7
+      weights: IMAGENET1K_V2
+    
+  decoder:
+    name: AdaptiveAttentionLSTM
+    weights: ""
+    freeze: False
+    config:
+      hidden_size: 512
+      attention_size: 512
+      embedding_size: 512
+      encoded_dimension: 2048
+      dropout: 0.5
+      search_strategy: beam_search
+      num_of_generated: 1
+      beam_size: 5
+
+preprocess:
+  image_size: [224, 224]
+  center_crop_size: [224, 224]
+  normalization_mean: [0.485, 0.456, 0.406]
+  normalization_std: [0.229, 0.224, 0.225]
+
+tokenizer:
+  wordmap: resnet/wordmap.json
+  max_length: 50
+
+data:
+  train:
+    - annotation: dataset/coco2014_indo_train.json
+      image_dir: dataset/coco2014/train2014
+    - annotation: dataset/flickr30k_indo_train.json
+      image_dir: dataset/flickr30k_images
+  validation:
+    - annotation: dataset/flickr30k_indo_val.json
+      image_dir: dataset/flickr30k_images
+  test:
+    # - annotation: dataset/flickr30k_indo_test.json
+    #   image_dir: dataset/flickr30k_images
+    - annotation: dataset/coco2014_indo_val.json
+      image_dir: dataset/coco2014/val2014
+  batch_size: 128
+  num_workers: 8
+
+training:
+  epochs: 20
+  finetune_epochs: 5 # 5 last epoch is finetune encoder
+  finetune_n_layer: 5 # num of last layer
+  grad_clip: 10.0
+  encoder_optimizer:
+    name: Adam
+    config:
+      betas: [0.9, 0.999]
+      lr: 0.0001
+    lr_scheduler:
+      name: ReduceLROnPlateau
+      config:
+        mode: max
+        patience: 3
+        verbose: True
+        factor: 0.1
+
+  decoder_optimizer:
+    name: Adam
+    config:
+      betas: [0.8, 0.999]
+      lr: 0.0005
+    lr_scheduler:
+      name: ReduceLROnPlateau
+      config:
+        mode: max
+        patience: 3
+        verbose: True
+        factor: 0.1
+  
+  loss:
+    name: CrossEntropyLoss
+    config:
+      reduction: mean
+
+  checkpoint_dir: checkpoints
+  track_metric: BLEU-1 # available: [BLEU-1, BLEU-2, BLEU-3, BLEU-4, METEOR, ROUGE_L, CIDEr, loss, top5_accuracy]
+  early_stop_n_epoch: 5
