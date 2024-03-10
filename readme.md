@@ -33,7 +33,8 @@ Follow this [example](https://colab.research.google.com/github/share424/Adaptive
     ```
 4. Install the requirements
     ```bash
-    python setup.py install
+    cd Adaptive-Attention-Generation-for-Indonesian-Image-Captioning
+    pip install .
     ```
 
 ## Without GPU
@@ -43,7 +44,8 @@ Follow this [example](https://colab.research.google.com/github/share424/Adaptive
     ```
 2. Install the requirements
     ```bash
-    python setup.py install
+    cd Adaptive-Attention-Generation-for-Indonesian-Image-Captioning
+    pip install .
     ```
 
 # Predict a single image
