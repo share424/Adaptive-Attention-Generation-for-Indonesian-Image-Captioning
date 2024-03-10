@@ -1,8 +1,8 @@
 from setuptools import setup, find_packages
 
 REQUIREMENTS = [
-    'torch>=2.2.1',
-    'torchvision>=0.17.1',
+    'torch>=2.0.0',
+    'torchvision>=0.17.0',
     'numpy>=1.26.3',
     'pydantic>=2.6.3',
     'pyyaml>=6.0.1',
