@@ -55,6 +55,5 @@ class EfficientNet(nn.Module):
         for param in self.model.parameters():
             param.requires_grad = False
 
-        for param in list(self.model.children())[-num_layers:]:
-            for p in param.parameters():
-                p.requires_grad = True
+        for param in self.model.features[-num_layers:].parameters():
+            param.requires_grad = True

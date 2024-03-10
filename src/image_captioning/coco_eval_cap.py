@@ -1,5 +1,10 @@
 
 """
+COCOEvalCap is a class for evaluating image captioning results using COCO metrics.
+
+TODO: Refactor this class to use PyTorch's `torchmetrics` library.
+        maybe we can use [tokenizers](https://github.com/huggingface/tokenizers) for tokenization
+
 References:
     [1] https://github.com/salaniz/pycocoevalcap/blob/master/eval.py
 """

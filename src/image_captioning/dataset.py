@@ -1,3 +1,4 @@
+"""Dataset for image captioning"""
 from typing import Tuple, List
 import os
 
@@ -27,6 +28,7 @@ class COCOTextDataset(Dataset):
         self._index_annotation()
 
     def _index_annotation(self):
+        """Index the annotations for fast retrieval"""
         for i, coco in enumerate(self.cocos):
             for ann_id in coco.getAnnIds():
                 self.annotation_index.append((i, ann_id))
@@ -86,6 +88,7 @@ class COCOImageDataset(Dataset):
         self._index_annotation()
 
     def _index_annotation(self):
+        """Index the annotations for fast retrieval"""
         for i, coco in enumerate(self.cocos):
             for image_id in coco.getImgIds():
                 self.annotation_index.append((i, image_id))

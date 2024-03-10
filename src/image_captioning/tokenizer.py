@@ -1,4 +1,5 @@
-from typing import Dict, Union, List, Optional
+"""Tokenizer for image captioning"""
+from typing import Dict, Union, List
 import json
 from enum import Enum
 
@@ -64,6 +65,16 @@ class Tokenizer:
         nltk_download_punkt()
 
     def tokenize(self, sentences: Union[str, List[str]], return_length=False, return_tensor=False) -> List[List[int]]:
+        """Tokenize sentences
+        
+        Args:
+            sentences (Union[str, List[str]]): sentences to tokenize
+            return_length (bool, optional): return length of the tokenized sentence. Defaults to False.
+            return_tensor (bool, optional): return tensor. Defaults to False.
+
+        Returns:
+            List[List[int]]: tokenized sentences
+        """
         if isinstance(sentences, str):
             sentences = [sentences]
 
@@ -94,6 +105,15 @@ class Tokenizer:
         return tokenized_sentences
     
     def detokenize(self, tokenized_sentences: Union[List[List[int]], torch.Tensor], keep_special_token=False) -> List[str]:
+        """Detokenize tokenized sentences
+        
+        Args:
+            tokenized_sentences (Union[List[List[int]], torch.Tensor]): tokenized sentences
+            keep_special_token (bool, optional): keep special token. Defaults to False.
+
+        Returns:
+            List[str]: detokenized sentences
+        """
         if isinstance(tokenized_sentences, torch.Tensor):
             tokenized_sentences = tokenized_sentences.tolist()
         sentences = []

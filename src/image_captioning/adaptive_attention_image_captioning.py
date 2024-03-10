@@ -1,4 +1,25 @@
+"""
+This file contains the implementation of the AdaptiveAttentionImageCaptioning class, which is responsible for generating captions for images using an adaptive attention mechanism.
 
+The AdaptiveAttentionImageCaptioning class provides methods for loading the model configuration, loading model weights, preprocessing images, generating captions for single or batch of images, and evaluating the model's performance.
+
+Example usage:
+    # Create an instance of AdaptiveAttentionImageCaptioning
+    captioning = AdaptiveAttentionImageCaptioning(config)
+
+    # Load model weights from a checkpoint file
+    captioning.load_checkpoint(checkpoint_path)
+
+    # Generate caption for a single image
+    caption = captioning.predict_single(image_path)
+
+    # Generate captions for a batch of images
+    captions = captioning.predict_batch(image_paths)
+
+    # Evaluate the model's performance on the test set
+    captioning.evaluate()
+
+"""
 from typing import Union, List, Tuple, NamedTuple, Optional
 import os
 
@@ -20,6 +41,8 @@ from image_captioning.utils.torch_utils import optimizer_to, scheduler_to, set_r
 
 
 class CheckpointData(NamedTuple):
+    """Checkpoint data structure."""
+
     epoch: int
     best_score: float
     n_epoch_no_improvement: int
@@ -27,6 +50,8 @@ class CheckpointData(NamedTuple):
 
 
 class AdaptiveAttentionImageCaptioning:
+    """AdaptiveAttentionImageCaptioning class."""
+
     def __init__(self, config: Config, **kwargs):
         super().__init__()
         self.config = config
@@ -80,18 +105,18 @@ class AdaptiveAttentionImageCaptioning:
         self.decoder.load_state_dict(torch.load(decoder_weights))
 
     def load_checkpoint(self, checkpoint: str):
-            """
-            Loads a checkpoint file and updates the encoder and decoder models with the saved state.
+        """
+        Loads a checkpoint file and updates the encoder and decoder models with the saved state.
 
-            Args:
-                checkpoint (str): The path to the checkpoint file.
+        Args:
+            checkpoint (str): The path to the checkpoint file.
 
-            Returns:
-                None
-            """
-            ckpt = torch.load(checkpoint)
-            self.encoder.load_state_dict(ckpt["encoder"])
-            self.decoder.load_state_dict(ckpt["decoder"])
+        Returns:
+            None
+        """
+        ckpt = torch.load(checkpoint)
+        self.encoder.load_state_dict(ckpt["encoder"])
+        self.decoder.load_state_dict(ckpt["decoder"])
 
     @staticmethod
     def from_yaml(path: str, **kwargs) -> "AdaptiveAttentionImageCaptioning":
@@ -131,6 +156,14 @@ class AdaptiveAttentionImageCaptioning:
     
     @staticmethod
     def get_transform(config: Config) -> transforms.Compose:
+        """Get the image preprocessing transform.
+
+        Args:
+            config (Config): The model configuration.
+
+        Returns:
+            transforms.Compose: The image preprocessing transform.
+        """
         return transforms.Compose([
             transforms.Resize(tuple(config.preprocess.image_size)),
             transforms.CenterCrop(tuple(config.preprocess.center_crop_size)),
@@ -258,6 +291,15 @@ class AdaptiveAttentionImageCaptioning:
         return sentences
     
     def evaluate(self, device: str = "cpu", split: str = "test", **kwargs):
+        """Evaluate the model's performance on specific set.
+        
+        Args:
+            device (str, optional): The device to run the model on. Defaults to "cpu".
+            split (str, optional): The dataset split to evaluate the model on. Defaults to "test".
+
+        Returns:
+            dict: A dictionary containing the evaluation metrics.
+        """
         import tempfile
         import json
         import os
@@ -327,7 +369,18 @@ class AdaptiveAttentionImageCaptioning:
 
         return final_metrics
 
+    # TODO: refactor this, move to a separate class
     def _calculate_accuracy(self, predictions: Tensor, targets: Tensor, k: int = 5) -> float:
+        """Calculate the top-k accuracy of the model's predictions.
+        
+        Args:
+            predictions (Tensor): The model's predictions.
+            targets (Tensor): The target labels.
+            k (int, optional): The number of top elements to consider. Defaults to 5.
+
+        Returns:
+            float: The top-k accuracy of the model's predictions.
+        """
         batch_size = targets.size(0)
         # Return the indices of the top-k elements along the first dimension (along every row of a 2D Tensor), sorted
         _, ind = predictions.topk(k, 1, True, True)    
@@ -350,6 +403,20 @@ class AdaptiveAttentionImageCaptioning:
         is_finetune: bool = False,
         device: str = "cuda",
     ):
+        """Train the model for one epoch.
+        
+        Args:
+            epoch (int): The current epoch number.
+            data_loader (DataLoader): The data loader for the training set.
+            criterion (nn.Module): The loss function.
+            encoder_optimizer (torch.optim.Optimizer): The optimizer for the encoder model.
+            decoder_optimizer (torch.optim.Optimizer): The optimizer for the decoder model.
+            is_finetune (bool, optional): Whether the model is in the finetuning phase. Defaults to False.
+            device (str, optional): The device to run the model on. Defaults to "cuda".
+
+        Returns:
+            Tuple[float, float]: The average loss and top-5 accuracy for the epoch.
+        """
         self.encoder.train()
         self.decoder.train()
 
@@ -408,6 +475,11 @@ class AdaptiveAttentionImageCaptioning:
         return losses.avg, top5_accuracy.avg
 
     def _initialize_criterion(self) -> nn.Module:
+        """Initialize the loss function.
+        
+        Returns:
+            nn.Module: The loss function.
+        """
         return getattr(torch.nn, self.config.training.loss.name)(
             **self.config.training.loss.config
         )
@@ -417,6 +489,15 @@ class AdaptiveAttentionImageCaptioning:
         model: nn.Module, 
         config: OptimizerConfig
     ) -> Tuple[Optional[torch.optim.Optimizer], Optional[torch.optim.lr_scheduler.LRScheduler]]:
+        """Initialize the optimizer and learning rate scheduler for the model.
+        
+        Args:
+            model (nn.Module): The model to initialize the optimizer for.
+            config (OptimizerConfig): The optimizer configuration.
+
+        Returns:
+            Tuple[Optional[torch.optim.Optimizer], Optional[torch.optim.lr_scheduler.LRScheduler]]: The optimizer and learning rate scheduler.
+        """
         params = filter(lambda p: p.requires_grad, model.parameters())
         
         # check if params empty
@@ -444,13 +525,27 @@ class AdaptiveAttentionImageCaptioning:
         encoder_lr_scheduler: torch.optim.lr_scheduler.LRScheduler,
         decoder_lr_scheduler: torch.optim.lr_scheduler.LRScheduler,
     ) -> CheckpointData:
+        """
+        Load a checkpoint from a given file path and update the model's state.
+
+        Args:
+            checkpoint (str): The file path of the checkpoint to load.
+            encoder_optimizer (torch.optim.Optimizer): The optimizer for the encoder.
+            decoder_optimizer (torch.optim.Optimizer): The optimizer for the decoder.
+            encoder_lr_scheduler (torch.optim.lr_scheduler.LRScheduler): The learning rate scheduler for the encoder.
+            decoder_lr_scheduler (torch.optim.lr_scheduler.LRScheduler): The learning rate scheduler for the decoder.
+
+        Returns:
+            CheckpointData: An object containing the loaded checkpoint data.
+
+        """
         print(f"Loading checkpoint from {checkpoint}")
         ckpt = torch.load(checkpoint)
         is_finetune = ckpt.get("is_finetune", False)
 
         self.encoder.load_state_dict(ckpt["encoder"])
         self.decoder.load_state_dict(ckpt["decoder"])
-        
+
         if is_finetune and ckpt["encoder_optimizer"] and ckpt["encoder_lr_scheduler"]:
             self.encoder.set_finetune_layer(self.config.training.finetune_n_layer)
 
@@ -475,6 +570,12 @@ class AdaptiveAttentionImageCaptioning:
         )
 
     def _initialize_train_dataloader(self) -> DataLoader:
+        """
+        Initializes and returns the training data loader.
+
+        Returns:
+            DataLoader: The training data loader.
+        """
         dataset = COCOTextDataset(
             self.config.data.train,
             self.tokenizer,
@@ -491,10 +592,16 @@ class AdaptiveAttentionImageCaptioning:
         return data_loader
 
     def train(self, device: str = "cuda", checkpoint: str = None, **kwargs):
-        """
+        """Train the model.
+
         Out training pipeline
         1. Freeze encoder, and train decoder only for N - k epochs
         2. Unfreeze encoder, and train both encoder and decoder for k epochs
+
+        Args:
+            device (str, optional): The device to run the model on. Defaults to "cuda".
+            checkpoint (str, optional): The file path of a checkpoint to resume training from. Defaults to None.
+            **kwargs: Additional keyword arguments to be passed to the evaluate method.
         """
 
         # Step 1. Freeze encoder, and train decoder only for N - k epochs
@@ -627,6 +734,22 @@ class AdaptiveAttentionImageCaptioning:
         is_finetune: bool,
         is_best: bool = False,
     ):
+        """Save the current model checkpoint to a file.
+
+        Args:
+            epoch (int): The current epoch number.
+            encoder (nn.Module): The encoder model.
+            decoder (nn.Module): The decoder model.
+            encoder_optimizer (torch.optim.Optimizer): The optimizer for the encoder.
+            decoder_optimizer (torch.optim.Optimizer): The optimizer for the decoder.
+            encoder_lr_scheduler (torch.optim.lr_scheduler.LRScheduler): The learning rate scheduler for the encoder.
+            decoder_lr_scheduler (torch.optim.lr_scheduler.LRScheduler): The learning rate scheduler for the decoder.
+            metrics (dict): A dictionary containing various metrics.
+            best_score (float): The best score achieved so far.
+            n_epoch_no_improvement (int): The number of epochs with no improvement in the score.
+            is_finetune (bool): Indicates whether the model is being fine-tuned.
+            is_best (bool, optional): Indicates whether this checkpoint is the best one. Defaults to False.
+        """
         state = {
             "epoch": epoch,
             "encoder": encoder.state_dict(),
@@ -657,7 +780,9 @@ class AdaptiveAttentionImageCaptioning:
         torch.save(state, output_path)
 
 
+# TODO: refactor this, move to a separate file
 class MetricTracker:
+    """A simple class for tracking metrics during training."""
     def __init__(self):
         self.val = 0
         self.avg = 0

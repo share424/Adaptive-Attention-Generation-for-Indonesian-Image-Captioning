@@ -1,3 +1,4 @@
+"""Configuration module for the image captioning model"""
 from typing import Tuple, List
 
 from pydantic import BaseModel, Field

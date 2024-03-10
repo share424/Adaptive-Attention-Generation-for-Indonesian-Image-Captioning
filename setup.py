@@ -32,6 +32,11 @@ def check_if_torchvision_installed():
     try:
         import torchvision
 
+        current_version = torchvision.__version__
+        
+        # remove any suffixes (e.g. +cu102 in the case of CUDA 10.2)
+        current_version = current_version.split("+")[0]
+
         if torchvision.__version__ < MIN_REQUIRED_TORCHVISION_VERSION:
             REQUIREMENTS.append(f"torchvision>={MIN_REQUIRED_TORCHVISION_VERSION}")
     except ImportError:
